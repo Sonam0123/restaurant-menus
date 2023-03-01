@@ -17,27 +17,41 @@ describe('Restaurant and Menu Models', () => {
     });
 
     test('can create a Restaurant', async () => {
-        // TODO - write test
-        expect('NO TEST').toEqual('EXPECTED DATA')
+        let restaurant = await Restaurant.create({
+            name: 'Gorkhali',
+            cuisine: 'Test Cuisine'
+        });
+        
+        expect(restaurant.name).toEqual('Gorkhali');
     });
 
     test('can create a Menu', async () => {
-        // TODO - write test
-        expect('NO TEST').toEqual('EXPECTED DATA')
+        let menu = await Menu.create({
+            title: 'Entrees'
+        });
+        expect(menu.title).toEqual('Entrees');
     });
 
     test('can find Restaurants', async () => {
-        // TODO - write test
-        expect('NO TEST').toEqual('EXPECTED DATA')
+        await sequelize.sync({ force: true}) //start off with a fresh table
+        const addedRestaurants = await Restaurant.bulkCreate(seedRestaurant);
+        const foundRestaurants = await Restaurant.findAll();
+        expect(foundRestaurants.length).toEqual(addedRestaurants.length);
+
     });
 
     test('can find Menus', async () => {
-        // TODO - write test
-        expect('NO TEST').toEqual('EXPECTED DATA')
+        await sequelize.sync({ force: true}) //start off with a fresh table
+        const addedMenus = await Menu.bulkCreate(seedMenu);
+        const foundMenus = await Menu.findAll();
+        expect(foundMenus.length).toEqual(addedMenus.length);
     });
 
     test('can delete Restaurants', async () => {
-        // TODO - write test
-        expect('NO TEST').toEqual('EXPECTED DATA')
+        await sequelize.sync({ force: true}) //start off with a fresh table
+        await Restaurant.bulkCreate(seedRestaurant);
+        await Restaurant.destroy({where: {name: 'AppleBees'}})
+        const foundRestaurantsAfterDelete = await Restaurant.findAll();
+        expect(foundRestaurantsAfterDelete.length).toEqual(2);
     });
 })
