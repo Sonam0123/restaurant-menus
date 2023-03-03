@@ -1,5 +1,5 @@
 const {sequelize} = require('./db')
-const {Restaurant, Menu} = require('./models/index')
+const {Restaurant, Menu, Item} = require('./models/index')
 const {
     seedRestaurant,
     seedMenu,
@@ -48,10 +48,37 @@ describe('Restaurant and Menu Models', () => {
     });
 
     test('can delete Restaurants', async () => {
-        await sequelize.sync({ force: true}) //start off with a fresh table
+         //start off with a fresh table
         await Restaurant.bulkCreate(seedRestaurant);
         await Restaurant.destroy({where: {name: 'AppleBees'}})
         const foundRestaurantsAfterDelete = await Restaurant.findAll();
         expect(foundRestaurantsAfterDelete.length).toEqual(2);
     });
+
+    //menus can be added to restaurants
+    test('can add a Menu to a Restaurant', async () => {
+        await sequelize.sync({ force: true}) //start off with a fresh table
+        const addedRestaurants = await Restaurant.bulkCreate(seedRestaurant);
+        const addedMenus = await Menu.bulkCreate(seedMenu);
+        const foundRestaurant = await Restaurant.findOne({where: {name: 'AppleBees'}})
+        const foundMenu = await Menu.findOne({where: {title: 'Breakfast'}})
+        await foundRestaurant.addMenu(foundMenu)
+        const foundRestaurantAfterAdd = await Restaurant.findOne({where: {name: 'AppleBees'}})
+        const foundMenuAfterAdd = await Menu.findOne({where: {title: 'Breakfast'}})
+        expect(foundRestaurantAfterAdd.name).toEqual('AppleBees');
+        expect(foundMenuAfterAdd.title).toEqual('Breakfast');
+    })
+
+//### Eager Loading
+// - Add a test or two that eager loads the data.
+// - For example, find all `Menus` and include their `Item` model
+
+    test('can find all Menus and include their Item model', async () => {
+        await sequelize.sync({ force: true}) //start off with a fresh table
+        const addedRestaurants = await Restaurant.bulkCreate(seedRestaurant);
+        const addedMenus = await Menu.bulkCreate(seedMenu);
+        const foundMenu = await Menu.findAll({include: Item})
+        expect(foundMenu.length).toEqual(3);
+    })
+
 })
