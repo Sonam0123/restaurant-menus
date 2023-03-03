@@ -69,15 +69,13 @@ describe('Restaurant and Menu Models', () => {
         expect(foundMenuAfterAdd.title).toEqual('Breakfast');
     })
 
-//### Eager Loading
-// - Add a test or two that eager loads the data.
-// - For example, find all `Menus` and include their `Item` model
 
     test('can find all Menus and include their Item model', async () => {
-        await sequelize.sync({ force: true}) //start off with a fresh table
+        await sequelize.sync({ force: true}) 
         const addedRestaurants = await Restaurant.bulkCreate(seedRestaurant);
         const addedMenus = await Menu.bulkCreate(seedMenu);
         const foundMenu = await Menu.findAll({include: Item})
+        console.log(foundMenu)
         expect(foundMenu.length).toEqual(3);
     })
 
